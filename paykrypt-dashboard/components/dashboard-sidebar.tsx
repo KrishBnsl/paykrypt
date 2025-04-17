@@ -146,29 +146,7 @@ export default function DashboardSidebar() {
           <SidebarFooter>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link 
-                  href={showAdminUI ? "/admin/settings" : "/dashboard/settings"} 
-                  className={pathname.includes("/settings") ? "text-primary font-medium" : ""}
-                >
-                  <SidebarMenuButton>
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link 
-                  href={showAdminUI ? "/admin/profile" : "/dashboard/profile"} 
-                  className={pathname.includes("/profile") ? "text-primary font-medium" : ""}
-                >
-                  <SidebarMenuButton>
-                    <User className="h-4 w-4" />
-                    <span>Profile</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link href="/">
+                <Link href="/logout" className="text-muted-foreground hover:text-foreground">
                   <SidebarMenuButton>
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>
