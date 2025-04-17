@@ -1,2 +1,5 @@
 .venv/
 dataset/
+paykrypt-dashboard/node_modules/
+paykrypt-dashboard/.next/
+paykrypt-dashboard/next-env.d.ts
