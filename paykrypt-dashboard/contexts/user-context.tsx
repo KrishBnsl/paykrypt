@@ -18,13 +18,16 @@ const UserContext = createContext<UserContextType>({
 export const useUser = () => useContext(UserContext)
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUserState] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // Initialize with current user from auth service
     const user = authService.getCurrentUser()
-    setCurrentUser(user)
+    if (user) {
+      // Get the user from auth service and set the state directly
+      setCurrentUserState(user)
+    }
     setLoading(false)
   }, [])
 
@@ -34,7 +37,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     
     // Update context state
     const user = db.getUserById(userId)
-    setCurrentUser(user)
+    if (user) {
+      setCurrentUserState(user)
+    }
   }
 
   return (

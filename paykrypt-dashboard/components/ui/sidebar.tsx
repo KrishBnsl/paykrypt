@@ -168,7 +168,7 @@ export const SidebarMenuItem = ({ className, active, ...props }: React.HTMLAttri
 export const SidebarMenuButton = ({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
   <button 
     className={cn(
-      "flex w-full cursor-pointer items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent/50", 
+      "flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent/50", 
       className
     )} 
     {...props} 
