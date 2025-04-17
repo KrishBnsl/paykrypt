@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { db } from "@/lib/db"
+import { db, authService } from "@/lib/db"
 import { useUser } from "@/contexts/user-context"
 
 export default function UserSelector() {
   const [users, setUsers] = useState<any[]>([])
-  const { currentUser, setCurrentUser } = useUser()
+  const { currentUser, refreshUser } = useUser()
 
   useEffect(() => {
     // Fetch all users
@@ -16,8 +16,10 @@ export default function UserSelector() {
   }, [])
 
   const handleUserChange = (userId: string) => {
-    // Update the user in context which will propagate to all components
-    setCurrentUser(userId)
+    // Update the current user in the auth service
+    authService.setCurrentUser(userId)
+    // Refresh the user context to update all components
+    refreshUser()
   }
 
   return (
@@ -29,8 +31,9 @@ export default function UserSelector() {
         </SelectTrigger>
         <SelectContent>
           {users.map((user) => (
+            // Only include the admin user for demo purposes
             <SelectItem key={user.id} value={user.id}>
-              {user.firstName} {user.lastName}
+              {user.firstName} {user.lastName} {user.isAdmin ? " (Admin)" : ""}
             </SelectItem>
           ))}
         </SelectContent>

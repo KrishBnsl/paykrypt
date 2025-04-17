@@ -14,6 +14,7 @@ export type User = {
   accounts: Account[]
   createdAt: Date
   updatedAt: Date
+  isAdmin?: boolean
 }
 
 export type Account = {
@@ -283,6 +284,17 @@ export const sampleUsers: User[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
+  {
+    id: "admin",
+    email: "admin@paykrypt.com",
+    firstName: "System",
+    lastName: "Administrator",
+    balance: 0, // Admin doesn't have a balance
+    accounts: [], // Admin doesn't have accounts
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    isAdmin: true, // Flag to identify admin users
+  },
 ]
 
 // Sample transactions for demonstration
@@ -539,6 +551,10 @@ export const db = {
     }
 
     return newTransaction
+  },
+
+  getAllTransactions: (): Transaction[] => {
+    return sampleTransactions
   },
 
   // Get spending categories for a user
