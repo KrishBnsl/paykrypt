@@ -258,7 +258,15 @@ export default function PaymentsPage() {
             </div>
 
             {riskScore && (
-              <Alert variant={riskScore === "HIGH" ? "destructive" : riskScore === "MEDIUM" ? "warning" : "default"}>
+              <Alert 
+                className={
+                  riskScore === "HIGH" 
+                    ? "border-destructive text-destructive" 
+                    : riskScore === "MEDIUM" 
+                      ? "border-yellow-500 text-yellow-600 dark:text-yellow-400" 
+                      : ""
+                }
+              >
                 {riskScore === "HIGH" ? <AlertCircle className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
                 <AlertTitle>
                   {riskScore === "HIGH"

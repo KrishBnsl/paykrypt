@@ -16,7 +16,11 @@ import {
 } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-export function FraudDetectionOverview() {
+interface FraudDetectionOverviewProps {
+  userId?: string | number; // Make userId optional and accept string or number
+}
+
+export function FraudDetectionOverview({ userId }: FraudDetectionOverviewProps) {
   const [riskData, setRiskData] = useState<any[]>([])
   const [categoryData, setCategoryData] = useState<any[]>([])
 

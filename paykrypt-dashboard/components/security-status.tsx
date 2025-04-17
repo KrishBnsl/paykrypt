@@ -1,7 +1,11 @@
 import { Shield, Lock, AlertTriangle, CheckCircle2 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 
-export function SecurityStatus() {
+interface SecurityStatusProps {
+  userId?: string | number;  // Make the prop optional with ?
+}
+
+export function SecurityStatus({ userId }: SecurityStatusProps) {
   const securityFeatures = [
     {
       name: "Quantum-Secure Encryption",

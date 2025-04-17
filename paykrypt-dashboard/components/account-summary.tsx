@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { db } from "@/lib/db"
 
@@ -47,6 +47,46 @@ export function AccountSummary({ userId }: AccountSummaryProps) {
     }
   }, [userId]) // Re-run when userId changes
 
+  // Create a smarter Y-axis configuration based on data range
+  const getYAxisConfig = useMemo(() => {
+    if (!data.length) return { domain: [0, 100] };
+    
+    // Find min and max balance values (excluding 0)
+    const balances = data.map(item => parseFloat(item.balance));
+    const minBalance = Math.min(...balances.filter(b => b > 0));
+    const maxBalance = Math.max(...balances);
+    
+    // Calculate appropriate min/max with padding
+    const range = maxBalance - minBalance;
+    
+    // For small amounts (less than $1000), start closer to minimum
+    if (maxBalance < 1000) {
+      const min = Math.max(0, minBalance - (range * 0.1));
+      const max = maxBalance + (range * 0.15);
+      return {
+        domain: [min, max],
+        allowDecimals: true,
+        tickCount: 5
+      };
+    } 
+    // For medium amounts
+    else if (maxBalance < 10000) {
+      return {
+        domain: [0, maxBalance * 1.15],
+        allowDecimals: false,
+        tickCount: 5
+      };
+    }
+    // For large amounts
+    else {
+      return {
+        domain: [0, maxBalance * 1.1],
+        allowDecimals: false,
+        tickCount: 5
+      };
+    }
+  }, [data]);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -73,10 +113,24 @@ export function AccountSummary({ userId }: AccountSummaryProps) {
             <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
             <XAxis dataKey="name" tickLine={false} axisLine={false} dy={10} />
             <YAxis
-              tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+              tickFormatter={(value) => {
+                // Format based on the value size
+                if (value >= 1000000) {
+                  return `$${(value / 1000000).toFixed(1)}M`;
+                } else if (value >= 1000) {
+                  return `$${(value / 1000).toFixed(0)}K`;
+                } else if (Number.isInteger(value)) {
+                  return `$${value}`;
+                } else {
+                  return `$${value.toFixed(1)}`;
+                }
+              }}
               tickLine={false}
               axisLine={false}
               dx={-10}
+              domain={getYAxisConfig.domain}
+              allowDecimals={getYAxisConfig.allowDecimals}
+              tickCount={getYAxisConfig.tickCount}
             />
             <Tooltip
               formatter={(value: number) => [`$${Number(value).toLocaleString()}`, "Balance"]}
