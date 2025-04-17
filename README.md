@@ -1,26 +1,49 @@
 # PayKrypt
 
-PayKrypt is an advanced fraud detection system for financial transactions, designed to identify fraudulent payment activities using machine learning techniques.
+PayKrypt is an advanced fraud detection and secure banking system designed for the financial future of Viksit Bharat 2047, implementing cutting-edge quantum-resistant cryptography and privacy-preserving machine learning techniques.
 
 ## Project Overview
 
-This project aims to build a robust fraud detection model by leveraging synthetic data generated based on patterns from the IEEE-CIS Fraud Detection dataset. It includes comprehensive data preprocessing, feature engineering, and multiple machine learning models to accurately identify fraudulent transactions.
+This project creates a next-generation financial security infrastructure that anticipates the challenges of the quantum computing era. PayKrypt combines sophisticated fraud detection capabilities with post-quantum cryptographic methods to ensure long-term security and privacy in financial transactions.
 
-## Dataset Generation
+## Data Preprocessing
 
-The project uses the IEEE-CIS Fraud Detection competition dataset from Kaggle as a reference for data generation:
+The project includes extensive data preprocessing steps for the generated data:
+- Feature engineering based on transaction time
+- Quantile and power transformations for numeric features
+- Dimensionality reduction techniques
+- Probabilistic encoding for categorical variables
+- Handling of missing values
+
+## Data Generation Using GANs
+
+PayKrypt uses Generative Adversarial Networks (GANs) to create synthetic financial transaction data, taking the IEEE-CIS Fraud Detection dataset as a reference:
 [IEEE-CIS Fraud Detection Competition](https://www.kaggle.com/competitions/ieee-fraud-detection/data)
 
-The IEEE dataset serves as a basis for generating synthetic transaction data with the following characteristics:
-- Transaction identifiers and timestamps
-- Payment amounts and methods
-- Card information
-- Address data
-- Email domains
-- Device information
-- Various engineered features (C1-C14, D1-D15, V1-V339, etc.)
+Key benefits of our GAN-based approach:
+- Creates realistic transaction patterns that preserve statistical properties of real financial data
+- Generates diverse fraud scenarios for comprehensive model training
+- Enables unlimited training data without privacy concerns
+- Simulates rare fraud patterns that might be underrepresented in original datasets
 
-This approach allows us to create controlled test scenarios while maintaining realistic transaction patterns.
+## Post-Quantum Homomorphic Encryption
+
+As traditional cryptographic methods become vulnerable to quantum computing attacks, PayKrypt implements post-quantum encryption schemes for homomorphic encryption:
+
+- **Lattice-Based Cryptography**: Our system utilizes lattice-based schemes resistant to quantum algorithms
+- **Quantum-Resistant Homomorphic Encryption**: Enables computations on encrypted data that will remain secure in the quantum era
+- **Future-Proof Architecture**: Designed to withstand advances in quantum computing expected by 2047
+
+## Federated Learning System
+
+PayKrypt implements a federated learning architecture with quantum-resistant security:
+
+- **Decentralized Model Training**: Each financial institution trains models locally on their own data
+- **Secure Parameter Sharing**: Model updates are protected with post-quantum homomorphic encryption
+- **Zero-Knowledge Proofs**: Verification of data integrity without revealing sensitive information
+- **Quantum-Resistant Secure Aggregation**: A central server aggregates encrypted model parameters without compromising security
+
+This approach creates a nationwide secure financial network aligned with Viksit Bharat 2047's vision of technological sovereignty and advanced digital infrastructure.
 
 ## Installation
 
@@ -35,60 +58,18 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Download dataset
-# Place the downloaded files in the 'data' directory
 ```
-
-## Data Preprocessing
-
-The project includes extensive data preprocessing steps for the generated data:
-- Feature engineering based on transaction time
-- Quantile and power transformations for numeric features
-- Dimensionality reduction techniques (ICA, Random Projections)
-- Probabilistic encoding for categorical variables
-- Handling of missing values
-
-All preprocessing and data generation steps are implemented in `data_preprocess.ipynb`.
 
 ## Usage
 
-1. Run the data preprocessing notebook:
+1. Data generation and preprocessing:
 ```bash
 jupyter notebook data_preprocess.ipynb
 ```
 
-2. Train the model:
+2. Run the federated learning system with post-quantum encryption:
 ```bash
-python train_model.py
-```
-
-3. Make predictions:
-```bash
-python predict.py
-```
-
-## Project Structure
-
-```
-paykrypt/
-│
-├── data/                  # Data files
-│   ├── generated_data/    # Generated synthetic data
-│   └── reference_data/    # IEEE dataset (for reference only)
-│
-├── notebooks/             # Jupyter notebooks
-│   ├── data_preprocess.ipynb
-│   └── data_generation.ipynb
-│
-├── src/                   # Source code
-│   ├── data_generation/   # Data generation modules
-│   ├── preprocessing/
-│   ├── models/
-│   └── evaluation/
-│
-├── requirements.txt       # Dependencies
-└── README.md              # This file
+jupyter notebook privacy_federated_learning.ipynb
 ```
 
 ## License
