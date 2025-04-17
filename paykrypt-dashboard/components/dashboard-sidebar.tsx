@@ -31,99 +31,101 @@ export default function DashboardSidebar() {
   const pathname = usePathname()
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <Sidebar>
-        <SidebarHeader className="flex h-14 items-center px-4">
-          <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
-            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-              <Shield className="h-4 w-4" />
-            </div>
-            PayKrypt
-          </Link>
-        </SidebarHeader>
-        <SidebarSeparator />
-        <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
-                <Link href="/dashboard">
-                  <LayoutDashboard className="h-4 w-4" />
-                  <span>Dashboard</span>
+    <div className="h-screen">
+      <SidebarProvider defaultOpen={true}>
+        <Sidebar>
+          <SidebarHeader className="flex h-14 items-center px-4">
+            <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
+              <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                <Shield className="h-4 w-4" />
+              </div>
+              PayKrypt
+            </Link>
+          </SidebarHeader>
+          <SidebarSeparator />
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <Link href="/dashboard" className={pathname === "/dashboard" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/dashboard/accounts"}>
-                <Link href="/dashboard/accounts">
-                  <Home className="h-4 w-4" />
-                  <span>Accounts</span>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/dashboard/accounts" className={pathname === "/dashboard/accounts" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <Home className="h-4 w-4" />
+                    <span>Accounts</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/dashboard/payments"}>
-                <Link href="/dashboard/payments">
-                  <DollarSign className="h-4 w-4" />
-                  <span>Payments</span>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/dashboard/payments" className={pathname === "/dashboard/payments" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <DollarSign className="h-4 w-4" />
+                    <span>Payments</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/dashboard/cards"}>
-                <Link href="/dashboard/cards">
-                  <CreditCard className="h-4 w-4" />
-                  <span>Cards</span>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/dashboard/cards" className={pathname === "/dashboard/cards" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <CreditCard className="h-4 w-4" />
+                    <span>Cards</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/dashboard/transactions"}>
-                <Link href="/dashboard/transactions">
-                  <BarChart3 className="h-4 w-4" />
-                  <span>Transactions</span>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/dashboard/transactions" className={pathname === "/dashboard/transactions" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <BarChart3 className="h-4 w-4" />
+                    <span>Transactions</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-assistant"}>
-                <Link href="/dashboard/ai-assistant">
-                  <MessageSquare className="h-4 w-4" />
-                  <span>AI Assistant</span>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/dashboard/ai-assistant" className={pathname === "/dashboard/ai-assistant" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <MessageSquare className="h-4 w-4" />
+                    <span>AI Assistant</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarSeparator />
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/dashboard/settings"}>
-                <Link href="/dashboard/settings">
-                  <Settings className="h-4 w-4" />
-                  <span>Settings</span>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarSeparator />
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <Link href="/dashboard/settings" className={pathname === "/dashboard/settings" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === "/dashboard/profile"}>
-                <Link href="/dashboard/profile">
-                  <User className="h-4 w-4" />
-                  <span>Profile</span>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link href="/dashboard/profile" className={pathname === "/dashboard/profile" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <User className="h-4 w-4" />
+                    <span>Profile</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <Link href="/">
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
+                  <SidebarMenuButton>
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </SidebarMenuButton>
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-    </SidebarProvider>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+      </SidebarProvider>
+    </div>
   )
 }
