@@ -9,25 +9,22 @@ import { FraudDetectionOverview } from "@/components/fraud-detection-overview"
 import { SecurityStatus } from "@/components/security-status"
 import { ExpenseDistribution } from "@/components/expense-distribution"
 import UserSelector from "./user-selector"
-import { authService, db } from "@/lib/db"
+import { db } from "@/lib/db"
+import { useUser } from "@/contexts/user-context"
 
 export default function DashboardPage() {
-  const [userData, setUserData] = useState<any>(null)
+  const { currentUser, loading } = useUser()
   const [transactions, setTransactions] = useState<any[]>([])
 
   useEffect(() => {
-    // Get current user data
-    const currentUser = authService.getCurrentUser()
     if (currentUser) {
-      setUserData(currentUser)
-
       // Get user's transactions
       const userTransactions = db.getTransactionsByUserId(currentUser.id)
       setTransactions(userTransactions)
     }
-  }, [])
+  }, [currentUser])
 
-  if (!userData) {
+  if (loading || !currentUser) {
     return <div>Loading...</div>
   }
 
@@ -50,8 +47,8 @@ export default function DashboardPage() {
                 <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${userData.balance.toFixed(2)}</div>
-                <p className="text-xs text-muted-foreground">{userData.accounts.length} active accounts</p>
+                <div className="text-2xl font-bold">${currentUser.balance.toFixed(2)}</div>
+                <p className="text-xs text-muted-foreground">{currentUser.accounts.length} active accounts</p>
               </CardContent>
             </Card>
             <Card>
@@ -62,12 +59,12 @@ export default function DashboardPage() {
                 <div className="text-2xl font-bold">
                   $
                   {transactions
-                    .filter((t) => t.status === "PENDING" && t.senderId === userData.id)
+                    .filter((t) => t.status === "PENDING" && t.senderId === currentUser.id)
                     .reduce((sum, t) => sum + t.amount, 0)
                     .toFixed(2)}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {transactions.filter((t) => t.status === "PENDING" && t.senderId === userData.id).length} pending
+                  {transactions.filter((t) => t.status === "PENDING" && t.senderId === currentUser.id).length} pending
                   transactions
                 </p>
               </CardContent>
@@ -97,7 +94,7 @@ export default function DashboardPage() {
                 <CardTitle>Account Summary</CardTitle>
               </CardHeader>
               <CardContent className="pl-2">
-                <AccountSummary userId={userData.id} />
+                <AccountSummary userId={currentUser.id} />
               </CardContent>
             </Card>
             <Card className="col-span-3">
@@ -106,7 +103,7 @@ export default function DashboardPage() {
                 <CardDescription>Your recent transaction history with AI-powered fraud detection</CardDescription>
               </CardHeader>
               <CardContent>
-                <RecentTransactions userId={userData.id} limit={5} />
+                <RecentTransactions userId={currentUser.id} limit={5} />
               </CardContent>
             </Card>
           </div>
@@ -116,7 +113,7 @@ export default function DashboardPage() {
               <CardDescription>Breakdown of your spending across different categories</CardDescription>
             </CardHeader>
             <CardContent>
-              <ExpenseDistribution userId={userData.id} />
+              <ExpenseDistribution userId={currentUser.id} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -127,7 +124,7 @@ export default function DashboardPage() {
               <CardDescription>AI-powered analysis of your transaction patterns</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
-              <FraudDetectionOverview userId={userData.id} />
+              <FraudDetectionOverview userId={currentUser.id} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -138,7 +135,7 @@ export default function DashboardPage() {
               <CardDescription>Overview of your account security and quantum-secure encryption</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
-              <SecurityStatus userId={userData.id} />
+              <SecurityStatus userId={currentUser.id} />
             </CardContent>
           </Card>
         </TabsContent>

@@ -13,10 +13,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { PaymentConfirmation } from "@/components/payment-confirmation"
 import UserSelector from "../user-selector"
-import { authService, db, type User } from "@/lib/db"
+import { db, type User } from "@/lib/db"
 import { sendTransactionForAnalysis } from "@/lib/python-connector"
+import { useUser } from "@/contexts/user-context"
 
 export default function PaymentsPage() {
+  const { currentUser, loading } = useUser()
   const [amount, setAmount] = useState("")
   const [recipient, setRecipient] = useState("")
   const [recipientId, setRecipientId] = useState("")
@@ -25,30 +27,30 @@ export default function PaymentsPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
   const [riskScore, setRiskScore] = useState<"LOW" | "MEDIUM" | "HIGH" | null>(null)
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [users, setUsers] = useState<User[]>([])
   const [selectedFromAccount, setSelectedFromAccount] = useState("")
   const [memo, setMemo] = useState("")
 
   useEffect(() => {
-    // Get current user data
-    const user = authService.getCurrentUser()
-    if (user) {
-      setCurrentUser(user)
-
+    if (currentUser) {
       // Set default from account to first checking account or first account
-      const checkingAccount = user.accounts.find((acc) => acc.type === "CHECKING")
+      const checkingAccount = currentUser.accounts.find((acc) => acc.type === "CHECKING")
       if (checkingAccount) {
         setSelectedFromAccount(checkingAccount.id)
-      } else if (user.accounts.length > 0) {
-        setSelectedFromAccount(user.accounts[0].id)
+      } else if (currentUser.accounts.length > 0) {
+        setSelectedFromAccount(currentUser.accounts[0].id)
       }
-    }
 
-    // Get all users for recipient selection
-    const allUsers = db.getUsers().filter((u) => u.id !== user?.id)
-    setUsers(allUsers)
-  }, [])
+      // Get all users for recipient selection
+      const allUsers = db.getUsers().filter((u) => u.id !== currentUser.id)
+      setUsers(allUsers)
+    }
+  }, [currentUser])
+
+  // Reset form when user changes
+  useEffect(() => {
+    resetForm()
+  }, [currentUser])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -120,6 +122,10 @@ export default function PaymentsPage() {
     }
   }
 
+  if (loading || !currentUser) {
+    return <div>Loading...</div>
+  }
+
   if (isComplete) {
     return (
       <div className="container mx-auto max-w-4xl py-6">
@@ -131,7 +137,7 @@ export default function PaymentsPage() {
           amount={amount}
           recipient={recipient}
           onDone={resetForm}
-          senderAccount={currentUser?.accounts.find((acc) => acc.id === selectedFromAccount)?.name || ""}
+          senderAccount={currentUser.accounts.find((acc) => acc.id === selectedFromAccount)?.name || ""}
           memo={memo}
         />
       </div>
@@ -163,7 +169,7 @@ export default function PaymentsPage() {
                       <SelectValue placeholder="Select your account" />
                     </SelectTrigger>
                     <SelectContent>
-                      {currentUser?.accounts.map((account) => (
+                      {currentUser.accounts.map((account) => (
                         <SelectItem key={account.id} value={account.id}>
                           {account.name} (${account.balance.toFixed(2)})
                         </SelectItem>

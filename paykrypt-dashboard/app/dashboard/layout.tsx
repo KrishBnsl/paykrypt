@@ -1,14 +1,17 @@
-import type { ReactNode } from "react"
-import DashboardSidebar from "@/components/dashboard-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
+"use client"
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+import { UserProvider } from "@/contexts/user-context"
+import DashboardSidebar from "@/components/dashboard-sidebar"
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen w-full overflow-hidden">
-      <DashboardSidebar />
-      <SidebarInset className="p-4 sm:p-6 overflow-x-auto min-w-0">
-        {children}
-      </SidebarInset>
-    </div>
+    <UserProvider>
+      <div className="flex min-h-screen">
+        <DashboardSidebar />
+        <div className="flex-1 overflow-auto p-8">
+          {children}
+        </div>
+      </div>
+    </UserProvider>
   )
 }

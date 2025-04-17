@@ -11,9 +11,11 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import UserSelector from "../user-selector"
-import { authService, db } from "@/lib/db"
+import { db } from "@/lib/db"
+import { useUser } from "@/contexts/user-context"
 
 export default function AIAssistantPage() {
+  const { currentUser, loading } = useUser()
   const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([
     {
       role: "assistant",
@@ -22,18 +24,20 @@ export default function AIAssistantPage() {
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [userId, setUserId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Reset messages when user changes
   useEffect(() => {
-    const currentUser = authService.getCurrentUser()
-    if (currentUser) {
-      setUserId(currentUser.id)
-    }
-  }, [])
+    setMessages([
+      {
+        role: "assistant",
+        content: `Hello${currentUser ? ` ${currentUser.firstName}` : ""}! I'm your AI banking assistant for PayKrypt. How can I help you with your banking needs today?`,
+      },
+    ])
+  }, [currentUser])
 
   const handleSendMessage = () => {
-    if (!input.trim()) return
+    if (!input.trim() || !currentUser) return
 
     // Add user message
     const userMessage = { role: "user" as const, content: input }
@@ -43,17 +47,15 @@ export default function AIAssistantPage() {
 
     // Simulate AI response based on query
     setTimeout(() => {
-      const user = authService.getCurrentUser()
-
       // Custom responses based on user query
       let aiResponse = ""
       const query = input.toLowerCase()
 
       if (query.includes("balance") || query.includes("account")) {
-        aiResponse = `Your total balance is $${user?.balance.toFixed(2)}. You have ${user?.accounts.length} active accounts.`
+        aiResponse = `Your total balance is $${currentUser.balance.toFixed(2)}. You have ${currentUser.accounts.length} active accounts.`
       } else if (query.includes("transaction") || query.includes("payment")) {
         const recentTransactions = db
-          .getTransactionsByUserId(user?.id || "")
+          .getTransactionsByUserId(currentUser.id)
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .slice(0, 3)
 
@@ -64,7 +66,7 @@ export default function AIAssistantPage() {
         aiResponse =
           "Our fraud detection system uses CNN and LSTM-based models to analyze transaction patterns in real-time. Your account is protected with quantum-secure encryption, and we use federated learning to improve our detection capabilities without compromising your privacy."
       } else if (query.includes("spending") || query.includes("budget")) {
-        const categories = db.getUserSpendingCategories(user?.id || "")
+        const categories = db.getUserSpendingCategories(currentUser.id)
         const topCategory = categories.sort((a, b) => b.percentage - a.percentage)[0]
 
         aiResponse = `Your highest spending category is ${topCategory.name} at ${topCategory.percentage}% of your budget. I recommend keeping housing costs below 30% of your income and saving at least 15-20% each month.`
@@ -98,6 +100,10 @@ export default function AIAssistantPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  if (loading || !currentUser) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className="container mx-auto max-w-4xl py-6">

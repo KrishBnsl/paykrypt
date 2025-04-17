@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { authService, db } from "@/lib/db"
+import { db } from "@/lib/db"
 
 interface AccountSummaryProps {
   userId?: string
@@ -13,37 +13,39 @@ export function AccountSummary({ userId }: AccountSummaryProps) {
   const [accounts, setAccounts] = useState<any[]>([])
 
   useEffect(() => {
-    // Get the current user or the specified user
-    const user = userId ? db.getUserById(userId) : authService.getCurrentUser()
+    if (userId) {
+      // Get the specified user
+      const user = db.getUserById(userId)
 
-    if (user) {
-      setAccounts(user.accounts)
+      if (user) {
+        setAccounts(user.accounts)
 
-      // Generate synthetic data for the chart
-      const generateData = () => {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        const currentMonth = new Date().getMonth()
+        // Generate synthetic data for the chart
+        const generateData = () => {
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+          const currentMonth = new Date().getMonth()
 
-        return Array.from({ length: 12 }, (_, i) => {
-          const monthIndex = (currentMonth - 11 + i) % 12
-          const month = months[monthIndex >= 0 ? monthIndex : monthIndex + 12]
+          return Array.from({ length: 12 }, (_, i) => {
+            const monthIndex = (currentMonth - 11 + i) % 12
+            const month = months[monthIndex >= 0 ? monthIndex : monthIndex + 12]
 
-          // Generate a somewhat realistic balance progression
-          const baseValue = user.balance * 0.8 // Start at 80% of current balance
-          const trend = i * (user.balance * 0.02) // Upward trend
-          const seasonality = Math.sin((i / 12) * Math.PI * 2) * (user.balance * 0.05) // Seasonal pattern
-          const noise = (Math.random() - 0.5) * (user.balance * 0.04) // Random fluctuations
+            // Generate a somewhat realistic balance progression
+            const baseValue = user.balance * 0.8 // Start at 80% of current balance
+            const trend = i * (user.balance * 0.02) // Upward trend
+            const seasonality = Math.sin((i / 12) * Math.PI * 2) * (user.balance * 0.05) // Seasonal pattern
+            const noise = (Math.random() - 0.5) * (user.balance * 0.04) // Random fluctuations
 
-          return {
-            name: month,
-            balance: Math.max(baseValue + trend + seasonality + noise, 0).toFixed(2),
-          }
-        })
+            return {
+              name: month,
+              balance: Math.max(baseValue + trend + seasonality + noise, 0).toFixed(2),
+            }
+          })
+        }
+
+        setData(generateData())
       }
-
-      setData(generateData())
     }
-  }, [userId])
+  }, [userId]) // Re-run when userId changes
 
   return (
     <div className="space-y-6">

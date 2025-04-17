@@ -1,24 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TransactionHistory } from "@/components/transaction-history"
 import { TransactionAnalytics } from "@/components/transaction-analytics"
 import UserSelector from "../user-selector"
-import { authService } from "@/lib/db"
+import { useUser } from "@/contexts/user-context"
 
 export default function TransactionsPage() {
-  const [userId, setUserId] = useState<string | null>(null)
+  const { currentUser, loading } = useUser()
 
-  useEffect(() => {
-    const currentUser = authService.getCurrentUser()
-    if (currentUser) {
-      setUserId(currentUser.id)
-    }
-  }, [])
-
-  if (!userId) {
+  if (loading || !currentUser) {
     return <div>Loading...</div>
   }
 
@@ -41,7 +33,7 @@ export default function TransactionsPage() {
               <CardDescription>View your recent transactions with AI-powered fraud detection insights</CardDescription>
             </CardHeader>
             <CardContent>
-              <TransactionHistory userId={userId} />
+              <TransactionHistory userId={currentUser.id} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -52,7 +44,7 @@ export default function TransactionsPage() {
               <CardDescription>AI-powered analysis of your spending patterns and fraud detection</CardDescription>
             </CardHeader>
             <CardContent>
-              <TransactionAnalytics userId={userId} />
+              <TransactionAnalytics userId={currentUser.id} />
             </CardContent>
           </Card>
         </TabsContent>
