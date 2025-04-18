@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { PaymentConfirmation } from "@/components/payment-confirmation"
 import UserSelector from "../user-selector"
 import { db, type User } from "@/lib/db"
-import { sendTransactionForAnalysis } from "@/lib/python-connector"
+import { sendTransactionForAnalysis } from "@/lib/fraud-detection"
 import { useUser } from "@/contexts/user-context"
 
 export default function PaymentsPage() {
@@ -68,25 +68,29 @@ export default function PaymentsPage() {
       amount: Number.parseFloat(amount),
       description: memo || paymentType,
       category: paymentType.charAt(0).toUpperCase() + paymentType.slice(1),
-      status: "PENDING",
-      riskScore: "LOW",
+      status: "PENDING" as "PENDING" | "COMPLETED" | "FLAGGED",
+      riskScore: "LOW" as "LOW" | "MEDIUM" | "HIGH",
       createdAt: new Date(),
     }
 
-    // Simulate sending to Python backend for fraud detection
+    // Send to Gemini AI for fraud detection analysis
     try {
       const analysisResult = await sendTransactionForAnalysis(newTransaction)
 
       // Update with analysis result
       setRiskScore(analysisResult.riskScore)
 
+      // Proceed with the transaction based on risk score
       if (analysisResult.riskScore !== "HIGH") {
+        // In a real app, you would save the transaction to the database here
+        // with the updated risk score and status from the AI
         setTimeout(() => {
           setIsComplete(true)
           setIsProcessing(false)
         }, 1000)
       } else {
         setIsProcessing(false)
+        // Transaction is blocked due to high risk
       }
     } catch (error) {
       console.error("Error analyzing transaction:", error)

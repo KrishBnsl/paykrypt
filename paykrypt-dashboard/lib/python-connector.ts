@@ -1,37 +1,64 @@
-// Utility functions to connect to a Python backend
-export async function sendTransactionForAnalysis(transactionData: any) {
+import { Transaction } from "./db";
+
+/**
+ * Sends a transaction to the Gemini API for fraud analysis.
+ * 
+ * @param transaction The transaction to analyze
+ * @returns The analyzed transaction with fraud detection info
+ */
+export async function sendTransactionForAnalysis(
+  transaction: Partial<Transaction>
+): Promise<{
+  transactionId: string;
+  riskScore: "LOW" | "MEDIUM" | "HIGH";
+  riskFactors: string[];
+  status: "COMPLETED" | "PENDING" | "FLAGGED";
+  recommendation: string;
+}> {
   try {
-    // In a real implementation, this would send the data to a Python backend
-    // For demonstration, we'll simulate the response
-
-    // Simulate response delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Randomly assign a risk score for demo purposes
-    const scores = ["LOW", "MEDIUM", "HIGH"] as const
-    const randomScore = scores[Math.floor(Math.random() * 3)]
-
-    // Determine status based on risk score
-    let status = "COMPLETED"
-    if (randomScore === "HIGH") {
-      status = "FLAGGED"
-    } else if (randomScore === "MEDIUM" && Math.random() > 0.7) {
-      status = "PENDING"
-    }
-
-    return {
-      transactionId: transactionData.id,
-      riskScore: randomScore,
-      status,
-      aiAnalysis: {
-        anomalyScore: Math.random(),
-        confidenceScore: Math.random() * 0.5 + 0.5,
-        patternMatching: Math.random() > 0.7,
+    // Get recent transactions to provide context for the AI
+    const response = await fetch("/api/python-interface", {
+      method: "GET",
+    });
+    
+    const transactionHistory = await response.json();
+    
+    // Send the current transaction along with history to the Gemini API
+    const analysisResponse = await fetch("/api/python-interface", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        currentTransaction: transaction,
+        transactionHistory,
+      }),
+    });
+    
+    if (!analysisResponse.ok) {
+      throw new Error(`Failed to analyze transaction: ${analysisResponse.statusText}`);
     }
+    
+    const result = await analysisResponse.json();
+    
+    if (!result.success || !result.updatedTransaction) {
+      throw new Error("Invalid response from fraud detection service");
+    }
+    
+    return result.updatedTransaction;
   } catch (error) {
-    console.error("Error sending transaction to Python backend:", error)
-    throw error
+    console.error("Error analyzing transaction:", error);
+    
+    // Provide a fallback response if the AI service fails
+    // In a real-world scenario, you might want to retry or handle this differently
+    return {
+      transactionId: transaction.id || "",
+      // Default to MEDIUM as a cautious approach when AI fails
+      riskScore: "MEDIUM",
+      riskFactors: ["Could not analyze transaction due to service error"],
+      status: "PENDING",
+      recommendation: "Please verify transaction details manually",
+    };
   }
 }
 
