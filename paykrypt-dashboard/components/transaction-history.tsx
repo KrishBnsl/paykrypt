@@ -174,7 +174,7 @@ export function TransactionHistory({ userId }: TransactionHistoryProps) {
                     {transaction.displayAmount > 0 ? "+" : ""}
                     {transaction.displayAmount.toLocaleString("en-US", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     })}
                   </TableCell>
                   <TableCell>

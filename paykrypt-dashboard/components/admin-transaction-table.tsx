@@ -176,7 +176,7 @@ export function AdminTransactionTable() {
                     <TableCell>
                       {transaction.amount.toLocaleString("en-US", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "INR",
                       })}
                     </TableCell>
                     <TableCell>

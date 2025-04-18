@@ -47,7 +47,7 @@ export default function DashboardPage() {
                 <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${currentUser.balance.toFixed(2)}</div>
+                <div className="text-2xl font-bold">₹{currentUser.balance.toFixed(2)}</div>
                 <p className="text-xs text-muted-foreground">{currentUser.accounts.length} active accounts</p>
               </CardContent>
             </Card>
@@ -57,7 +57,7 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  $
+                  ₹
                   {transactions
                     .filter((t) => t.status === "PENDING" && t.senderId === currentUser.id)
                     .reduce((sum, t) => sum + t.amount, 0)

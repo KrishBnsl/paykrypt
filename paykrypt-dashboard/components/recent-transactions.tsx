@@ -108,7 +108,7 @@ export function RecentTransactions({ userId, limit = 5 }: RecentTransactionsProp
                   {formattedTransaction.displayAmount > 0 ? "+" : ""}
                   {formattedTransaction.displayAmount.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   })}
                 </p>
                 <p

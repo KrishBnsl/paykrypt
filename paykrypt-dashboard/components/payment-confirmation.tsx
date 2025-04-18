@@ -38,7 +38,7 @@ export function PaymentConfirmation({ amount, recipient, senderAccount, memo, on
             </div>
             <div className="flex justify-between py-2 border-b">
               <span className="text-muted-foreground">Amount</span>
-              <span className="font-medium">${amount}</span>
+              <span className="font-medium">₹{amount}</span>
             </div>
             <div className="flex justify-between py-2 border-b">
               <span className="text-muted-foreground">Date</span>

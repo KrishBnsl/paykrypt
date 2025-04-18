@@ -27,7 +27,7 @@ export function ExpenseDistribution({ userId }: ExpenseDistributionProps) {
       setTotalSpent(total)
 
       // Add real value to categories based on percentage
-      const categoriesWithValue = categories.map((category) => ({
+      const categoriesWithValue = categories.map((category: {id: string; name: string; percentage: number}) => ({
         ...category,
         value: (category.percentage / 100) * total,
       }))
@@ -41,7 +41,7 @@ export function ExpenseDistribution({ userId }: ExpenseDistributionProps) {
   const formatCurrency = (value: number) => {
     return value.toLocaleString("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     })

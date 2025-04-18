@@ -116,13 +116,13 @@ export function AccountSummary({ userId }: AccountSummaryProps) {
               tickFormatter={(value) => {
                 // Format based on the value size
                 if (value >= 1000000) {
-                  return `$${(value / 1000000).toFixed(1)}M`;
+                  return `₹${(value / 1000000).toFixed(1)}M`;
                 } else if (value >= 1000) {
-                  return `$${(value / 1000).toFixed(0)}K`;
+                  return `₹${(value / 1000).toFixed(0)}K`;
                 } else if (Number.isInteger(value)) {
-                  return `$${value}`;
+                  return `₹${value}`;
                 } else {
-                  return `$${value.toFixed(1)}`;
+                  return `₹${value.toFixed(1)}`;
                 }
               }}
               tickLine={false}
@@ -133,7 +133,7 @@ export function AccountSummary({ userId }: AccountSummaryProps) {
               tickCount={getYAxisConfig.tickCount}
             />
             <Tooltip
-              formatter={(value: number) => [`$${Number(value).toLocaleString()}`, "Balance"]}
+              formatter={(value: number) => [`₹${Number(value).toLocaleString()}`, "Balance"]}
               labelFormatter={(label) => `Month: ${label}`}
             />
             <Line

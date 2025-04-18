@@ -48,7 +48,7 @@ export default function AccountsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-center">
-                    <div className="text-2xl font-bold">${account.balance.toFixed(2)}</div>
+                    <div className="text-2xl font-bold">₹{account.balance.toFixed(2)}</div>
                     <div className="flex items-center text-sm text-muted-foreground">
                       <CreditCard className="mr-1 h-4 w-4" />
                       {account.id.slice(-4)}

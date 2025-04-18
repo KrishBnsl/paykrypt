@@ -154,12 +154,12 @@ export function AdminMetrics() {
                   <XAxis dataKey="name" />
                   <YAxis
                     tickFormatter={(value) => {
-                      if (value >= 1000) return `$${(value / 1000).toFixed(0)}k`
-                      return `$${value}`
+                      if (value >= 1000) return `₹${(value / 1000).toFixed(0)}k`
+                      return `₹${value}`
                     }}
                   />
                   <Tooltip 
-                    formatter={(value) => [`$${Number(value).toLocaleString()}`, "Amount"]} 
+                    formatter={(value) => [`₹${Number(value).toLocaleString()}`, "Amount"]} 
                   />
                   <Bar dataKey="value" fill="hsl(var(--primary))" />
                 </BarChart>
