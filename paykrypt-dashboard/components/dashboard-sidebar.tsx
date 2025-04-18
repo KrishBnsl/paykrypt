@@ -146,7 +146,7 @@ export default function DashboardSidebar() {
           <SidebarFooter>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link href="/logout" className="text-muted-foreground hover:text-foreground">
+                <Link href="/" className="text-muted-foreground hover:text-foreground">
                   <SidebarMenuButton>
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>

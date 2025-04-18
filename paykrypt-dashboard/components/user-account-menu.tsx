@@ -87,7 +87,7 @@ export function UserAccountMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href="/logout" className="flex w-full items-center">
+          <Link href="/" className="flex w-full items-center">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </Link>
