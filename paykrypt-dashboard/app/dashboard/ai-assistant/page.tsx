@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { Bot, User, ArrowLeft, ArrowRight, Send, Brain } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
@@ -268,18 +268,13 @@ export default function AIAssistantPage() {
   return (
     <div className="container mx-auto max-w-4xl py-6">
       <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-bold">AI Banking Assistant</h1>
+        <h1 className="text-3xl font-bold">PayKrypt - AI Banking Assistant</h1>
         <UserSelector />
       </div>
 
       <Card className="h-[calc(100vh-12rem)]">
         <CardHeader>
-          <CardTitle>PayKrypt AI Assistant</CardTitle>
-          <CardDescription>
-            {currentMenu === "ai-support" 
-              ? "Advanced AI support with quantum-secure encryption" 
-              : "Interactive menu-based support with quantum-secure encryption"}
-          </CardDescription>
+          {/* Removed redundant title and description */}
         </CardHeader>
         <CardContent className="p-0">
           <ScrollArea className="h-[calc(100vh-20rem)] px-4">
