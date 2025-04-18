@@ -3,12 +3,13 @@
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
-import { Bot, User, ArrowLeft, ArrowRight } from "lucide-react"
+import { Bot, User, ArrowLeft, ArrowRight, Send, Brain } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Input } from "@/components/ui/input"
 import UserSelector from "../user-selector"
 import { useUser } from "@/contexts/user-context"
 
@@ -51,9 +52,11 @@ const faqData: FAQData = {
 export default function AIAssistantPage() {
   const { currentUser, loading } = useUser()
   const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string; isOption?: boolean }>>([])
-  const [currentMenu, setCurrentMenu] = useState<"main" | "category" | "answer">("main")
+  const [currentMenu, setCurrentMenu] = useState<"main" | "category" | "answer" | "ai-support">("main")
   const [currentCategory, setCurrentCategory] = useState<string>("")
   const [currentQuestion, setCurrentQuestion] = useState<string>("")
+  const [aiInput, setAiInput] = useState("")
+  const [isAiProcessing, setIsAiProcessing] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Initialize the chatbot with a welcome message
@@ -168,6 +171,95 @@ export default function AIAssistantPage() {
     setCurrentQuestion("");
     setCurrentMenu("category");
   };
+  
+  // Switch to AI support mode
+  const switchToAiSupport = () => {
+    setMessages((prev) => [
+      ...prev,
+      { 
+        role: "assistant", 
+        content: "I'm connecting you to our advanced AI support system. Feel free to ask any specific questions about banking, security, or your account.",
+      }
+    ]);
+    setCurrentMenu("ai-support");
+  };
+  
+  // Handle sending message to AI support
+  const handleSendToAi = async () => {
+    if (!aiInput.trim()) return;
+    
+    const userMessage = aiInput;
+    setAiInput("");
+    setIsAiProcessing(true);
+    
+    // Add user message to chat
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: userMessage }
+    ]);
+    
+    try {
+      // Call the Gemini API through our backend endpoint
+      const response = await fetch("/api/ai-support", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: userMessage }),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to get AI response");
+      }
+      
+      const data = await response.json();
+      
+      // Add AI response to chat
+      setMessages((prev) => [
+        ...prev,
+        { 
+          role: "assistant", 
+          content: data.response || "I'm sorry, I couldn't process your request. Please try again."
+        }
+      ]);
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      setMessages((prev) => [
+        ...prev,
+        { 
+          role: "assistant", 
+          content: "I apologize, but I'm having trouble connecting to our AI system right now. Please try again later or select another option."
+        }
+      ]);
+    } finally {
+      setIsAiProcessing(false);
+    }
+  };
+  
+  // Handle enter key in AI support input
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey && !isAiProcessing) {
+      e.preventDefault();
+      handleSendToAi();
+    }
+  };
+  
+  // Exit AI support mode
+  const exitAiSupport = () => {
+    setMessages((prev) => [
+      ...prev,
+      { 
+        role: "assistant", 
+        content: "Returning to the guided menu. How else can I help you?",
+      },
+      {
+        role: "assistant",
+        content: "Please select a category:",
+        isOption: true,
+      }
+    ]);
+    setCurrentMenu("main");
+  };
 
   if (loading || !currentUser) {
     return <div>Loading...</div>
@@ -183,7 +275,11 @@ export default function AIAssistantPage() {
       <Card className="h-[calc(100vh-12rem)]">
         <CardHeader>
           <CardTitle>PayKrypt AI Assistant</CardTitle>
-          <CardDescription>Interactive menu-based support with quantum-secure encryption</CardDescription>
+          <CardDescription>
+            {currentMenu === "ai-support" 
+              ? "Advanced AI support with quantum-secure encryption" 
+              : "Interactive menu-based support with quantum-secure encryption"}
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <ScrollArea className="h-[calc(100vh-20rem)] px-4">
@@ -218,7 +314,29 @@ export default function AIAssistantPage() {
                   </div>
                 </div>
               ))}
-              {currentMenu !== "answer" && (
+              
+              {isAiProcessing && (
+                <div className="flex justify-start">
+                  <div className="flex gap-3 max-w-[80%]">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/placeholder.svg?height=32&width=32" />
+                      <AvatarFallback>
+                        <Bot className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="rounded-lg px-4 py-2 bg-muted">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-150"></div>
+                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-300"></div>
+                        <span className="text-sm">Thinking...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {currentMenu !== "answer" && currentMenu !== "ai-support" && (
                 <div className="grid grid-cols-1 gap-2 py-2">
                   {renderOptions().map((option, idx) => (
                     <Button 
@@ -232,50 +350,88 @@ export default function AIAssistantPage() {
                   ))}
                 </div>
               )}
+              
               {currentMenu === "answer" && (
-                <div className="flex gap-2 py-2">
+                <div className="flex flex-col gap-2 py-2">
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={goToCategoryMenu}
+                    >
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Back to questions
+                    </Button>
+                    <Button 
+                      variant="default" 
+                      className="flex-1"
+                      onClick={goToMainMenu}
+                    >
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                      Main menu
+                    </Button>
+                  </div>
                   <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={goToCategoryMenu}
+                    variant="secondary"
+                    className="w-full mt-2"
+                    onClick={switchToAiSupport}
                   >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to questions
-                  </Button>
-                  <Button 
-                    variant="default" 
-                    className="flex-1"
-                    onClick={goToMainMenu}
-                  >
-                    <ArrowRight className="mr-2 h-4 w-4" />
-                    Main menu
+                    <Brain className="mr-2 h-4 w-4" />
+                    Ask AI Support Bot
                   </Button>
                 </div>
               )}
+              
               <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
         </CardContent>
         <CardFooter className="border-t p-4">
-          <div className="w-full text-center text-sm text-muted-foreground">
-            {currentMenu === "main" ? (
-              "Select a category to get started"
-            ) : currentMenu === "category" ? (
-              <>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={goToMainMenu}
-                  className="text-xs"
-                >
-                  <ArrowLeft className="mr-1 h-3 w-3" />
-                  Back to main menu
-                </Button>
-              </>
-            ) : (
-              "Select an option to continue"
-            )}
-          </div>
+          {currentMenu === "ai-support" ? (
+            <div className="flex w-full items-center space-x-2">
+              <Input
+                placeholder="Ask any banking or security question..."
+                value={aiInput}
+                onChange={(e) => setAiInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="flex-1"
+                disabled={isAiProcessing}
+              />
+              <Button 
+                onClick={handleSendToAi} 
+                disabled={!aiInput.trim() || isAiProcessing}
+              >
+                <Send className="h-4 w-4" />
+                <span className="sr-only">Send</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={exitAiSupport}
+              >
+                Exit AI Chat
+              </Button>
+            </div>
+          ) : (
+            <div className="w-full text-center text-sm text-muted-foreground">
+              {currentMenu === "main" ? (
+                "Select a category to get started"
+              ) : currentMenu === "category" ? (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={goToMainMenu}
+                    className="text-xs"
+                  >
+                    <ArrowLeft className="mr-1 h-3 w-3" />
+                    Back to main menu
+                  </Button>
+                </>
+              ) : (
+                "Select an option to continue"
+              )}
+            </div>
+          )}
         </CardFooter>
       </Card>
     </div>
