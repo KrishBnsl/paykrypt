@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react"
+import { v4 as uuidv4 } from "uuid"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -60,7 +61,7 @@ export default function PaymentsPage() {
 
     // Create transaction object
     const newTransaction = {
-      id: Math.random().toString(36).substring(2, 15),
+      id: uuidv4(), // Use UUID for more reliable IDs
       senderId: currentUser.id,
       receiverId: recipientId || null,
       senderAccountId: selectedFromAccount,
@@ -77,13 +78,28 @@ export default function PaymentsPage() {
     try {
       const analysisResult = await sendTransactionForAnalysis(newTransaction)
 
-      // Update with analysis result
+      // FIX: Explicitly set status to FLAGGED for HIGH risk transactions
+      const status = analysisResult.riskScore === "HIGH" ? "FLAGGED" : analysisResult.status;
+      
+      // Update transaction with analysis result
+      const updatedTransaction = {
+        ...newTransaction,
+        riskScore: analysisResult.riskScore,
+        status: status, // Use our fixed status
+        riskFactors: analysisResult.riskFactors,
+        recommendation: analysisResult.recommendation
+      }
+
+      console.log("Creating transaction with status:", status, "risk:", analysisResult.riskScore);
+      
+      // Store the transaction in database
+      db.createTransaction(updatedTransaction)
+      
+      // Update with analysis result UI
       setRiskScore(analysisResult.riskScore)
 
       // Proceed with the transaction based on risk score
       if (analysisResult.riskScore !== "HIGH") {
-        // In a real app, you would save the transaction to the database here
-        // with the updated risk score and status from the AI
         setTimeout(() => {
           setIsComplete(true)
           setIsProcessing(false)

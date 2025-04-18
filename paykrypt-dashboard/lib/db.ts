@@ -912,73 +912,176 @@ const calculateUserReputation = (userId: string): "excellent" | "good" | "averag
   return "good";
 };
 
+// Function to initialize the database with sample data if not already present
+const initializeDatabase = () => {
+  if (typeof window === 'undefined') return;
+
+  // Check if we've already initialized data in localStorage
+  const hasInitialized = localStorage.getItem('paykrypt_initialized');
+  
+  if (!hasInitialized) {
+    // Save users to localStorage
+    localStorage.setItem('paykrypt_users', JSON.stringify(sampleUsers));
+    
+    // Save transactions to localStorage
+    localStorage.setItem('paykrypt_transactions', JSON.stringify(sampleTransactions));
+    
+    // Save categories to localStorage
+    localStorage.setItem('paykrypt_categories', JSON.stringify(userSpendingCategories));
+    
+    // Mark as initialized
+    localStorage.setItem('paykrypt_initialized', 'true');
+  }
+};
+
+// Try to initialize on import
+try {
+  initializeDatabase();
+} catch (e) {
+  console.error("Error initializing database:", e);
+}
+
 // Mock DB functions
 export const db = {
   // User management
   getUsers: (): User[] => {
-    return sampleUsers
+    if (typeof window !== 'undefined') {
+      try {
+        const storedUsers = localStorage.getItem('paykrypt_users');
+        if (storedUsers) {
+          return JSON.parse(storedUsers);
+        }
+      } catch (e) {
+        console.error("Error reading users from localStorage:", e);
+      }
+    }
+    return sampleUsers;
   },
 
   getUserById: (id: string): User | undefined => {
-    return sampleUsers.find((user) => user.id === id)
+    const users = db.getUsers();
+    return users.find((user) => user.id === id);
   },
 
   createUser: (userData: Omit<User, "id" | "createdAt" | "updatedAt" | "reputation" | "loginHistory">): User => {
-    // In a real implementation, this would insert into a database
     const newUser: User = {
       id: uuidv4(),
       ...userData,
-      reputation: "average", // New users start with average reputation
-      loginHistory: [], // Start with empty login history
+      reputation: "average",
+      loginHistory: [],
       createdAt: new Date(),
       updatedAt: new Date(),
+    };
+
+    if (typeof window !== 'undefined') {
+      try {
+        const users = db.getUsers();
+        const updatedUsers = [...users, newUser];
+        localStorage.setItem('paykrypt_users', JSON.stringify(updatedUsers));
+      } catch (e) {
+        console.error("Error saving new user to localStorage:", e);
+      }
     }
 
-    return newUser
+    return newUser;
+  },
+
+  updateUser: (user: User): User => {
+    if (typeof window !== 'undefined') {
+      try {
+        const users = db.getUsers();
+        const updatedUsers = users.map(u => u.id === user.id ? user : u);
+        localStorage.setItem('paykrypt_users', JSON.stringify(updatedUsers));
+      } catch (e) {
+        console.error("Error updating user in localStorage:", e);
+      }
+    }
+    return user;
   },
 
   // Transaction management
   getTransactions: (): Transaction[] => {
-    return sampleTransactions
+    if (typeof window !== 'undefined') {
+      try {
+        const storedTransactions = localStorage.getItem('paykrypt_transactions');
+        if (storedTransactions) {
+          return JSON.parse(storedTransactions);
+        }
+      } catch (e) {
+        console.error("Error reading transactions from localStorage:", e);
+      }
+    }
+    return sampleTransactions;
+  },
+
+  getAllTransactions: (): Transaction[] => {
+    return db.getTransactions();
   },
 
   getTransactionsByUserId: (userId: string): Transaction[] => {
-    return sampleTransactions.filter(
+    const transactions = db.getTransactions();
+    return transactions.filter(
       (transaction) => transaction.senderId === userId || transaction.receiverId === userId,
-    )
+    );
   },
 
   createTransaction: (transactionData: Omit<Transaction, "id" | "createdAt">): Transaction => {
-    // In a real implementation, this would insert into a database
     const newTransaction: Transaction = {
       id: uuidv4(),
       ...transactionData,
       createdAt: new Date(),
+    };
+
+    if (typeof window !== 'undefined') {
+      try {
+        const transactions = db.getTransactions();
+        const updatedTransactions = [...transactions, newTransaction];
+        localStorage.setItem('paykrypt_transactions', JSON.stringify(updatedTransactions));
+      } catch (e) {
+        console.error("Error saving new transaction to localStorage:", e);
+      }
     }
 
-    return newTransaction
+    return newTransaction;
   },
 
-  getAllTransactions: (): Transaction[] => {
-    return sampleTransactions
+  updateTransaction: (transaction: Transaction): Transaction => {
+    if (typeof window !== 'undefined') {
+      try {
+        const transactions = db.getTransactions();
+        const updatedTransactions = transactions.map(t => t.id === transaction.id ? transaction : t);
+        localStorage.setItem('paykrypt_transactions', JSON.stringify(updatedTransactions));
+      } catch (e) {
+        console.error("Error updating transaction in localStorage:", e);
+      }
+    }
+    return transaction;
   },
 
   // Get spending categories for a user
   getUserSpendingCategories: (userId: string) => {
-    // In a real implementation, this would retrieve from a database
-    // For now, return the same categories for all users
-    return userSpendingCategories
+    if (typeof window !== 'undefined') {
+      try {
+        const storedCategories = localStorage.getItem('paykrypt_categories');
+        if (storedCategories) {
+          return JSON.parse(storedCategories);
+        }
+      } catch (e) {
+        console.error("Error reading categories from localStorage:", e);
+      }
+    }
+    return userSpendingCategories;
   },
   
   // Get user reputation
   getUserReputation: (userId: string) => {
-    const user = sampleUsers.find(u => u.id === userId);
+    const user = db.getUserById(userId);
     return user?.reputation || "average";
   },
   
   // Record a new login event
   recordLoginEvent: (userId: string, ipAddress: string, device: string, location: string, successful: boolean) => {
-    const user = sampleUsers.find(u => u.id === userId);
+    const user = db.getUserById(userId);
     if (user) {
       const newLogin: LoginEvent = {
         id: uuidv4(),
@@ -990,12 +1093,13 @@ export const db = {
         successful
       };
       
-      user.loginHistory.unshift(newLogin); // Add to start of array (newest first)
+      user.loginHistory.unshift(newLogin);
       
-      // Limit history size
       if (user.loginHistory.length > 50) {
         user.loginHistory = user.loginHistory.slice(0, 50);
       }
+      
+      db.updateUser(user);
       
       return newLogin;
     }
@@ -1004,7 +1108,7 @@ export const db = {
   
   // Get user login history
   getUserLoginHistory: (userId: string) => {
-    const user = sampleUsers.find(u => u.id === userId);
+    const user = db.getUserById(userId);
     return user?.loginHistory || [];
   }
 }

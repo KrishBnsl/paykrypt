@@ -13,6 +13,7 @@ import {
   Settings,
   Shield,
   User,
+  AlertTriangle
 } from "lucide-react"
 
 import {
@@ -28,16 +29,51 @@ import {
 } from "@/components/ui/sidebar"
 import { useUser } from "@/contexts/user-context"
 import { useEffect, useState } from "react"
+import { db } from "@/lib/db"
+import { Badge } from "@/components/ui/badge"
 
 export default function DashboardSidebar() {
   const pathname = usePathname()
-  const { isAdmin } = useUser()
+  const { currentUser, isAdmin } = useUser()
   const [isAdminRoute, setIsAdminRoute] = useState(false)
+  const [flaggedCount, setFlaggedCount] = useState(0)
   
   // Detect if we're in an admin route and update state
   useEffect(() => {
     setIsAdminRoute(pathname?.startsWith('/admin') || false)
   }, [pathname])
+  
+  // Get count of flagged transactions in real-time
+  useEffect(() => {
+    // Only fetch flagged count for admin users
+    if (!isAdmin) return
+    
+    const getFlaggedCount = () => {
+      try {
+        let transactions: { riskScore: string; status: string }[] = []
+        if (typeof db.getAllTransactions === 'function') {
+          transactions = db.getAllTransactions()
+        } else if (typeof db.getTransactions === 'function') {
+          transactions = db.getTransactions()
+        }
+        
+        const flagged = transactions.filter(t => 
+          t.riskScore === "HIGH" && t.status === "FLAGGED"
+        ).length
+
+        setFlaggedCount(flagged)
+      } catch (error) {
+        console.error("Error getting flagged count:", error)
+      }
+    }
+
+    // Initial count
+    getFlaggedCount()
+    
+    // Set up polling for real-time updates
+    const interval = setInterval(getFlaggedCount, 3000)
+    return () => clearInterval(interval)
+  }, [isAdmin])
   
   // Force admin sidebar when on admin routes, otherwise follow user role
   const showAdminUI = isAdminRoute || isAdmin
@@ -116,9 +152,6 @@ export default function DashboardSidebar() {
           {/* Admin navigation */}
           {showAdminUI && (
             <SidebarContent>
-              <SidebarHeader>
-                <div className="px-4 py-2 font-semibold">Admin</div>
-              </SidebarHeader>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <Link href="/admin/dashboard" className={pathname === "/admin/dashboard" ? "text-primary font-medium" : ""}>
@@ -131,8 +164,40 @@ export default function DashboardSidebar() {
                 <SidebarMenuItem>
                   <Link href="/admin/transactions" className={pathname === "/admin/transactions" ? "text-primary font-medium" : ""}>
                     <SidebarMenuButton>
-                      <BarChart3 className="h-4 w-4" />
+                      <CreditCard className="h-4 w-4" />
                       <span>All Transactions</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link 
+                    href="/admin/flagged-transactions" 
+                    className={pathname === "/admin/flagged-transactions" ? "text-primary font-medium" : ""}
+                  >
+                    <SidebarMenuButton>
+                      <AlertTriangle className="h-4 w-4" />
+                      <span>Flagged Transactions</span>
+                      {flaggedCount > 0 && (
+                        <Badge variant="destructive" className="ml-auto">
+                          {flaggedCount}
+                        </Badge>
+                      )}
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/admin/users" className={pathname === "/admin/users" ? "text-primary font-medium" : ""}>
+                    <SidebarMenuButton>
+                      <User className="h-4 w-4" />
+                      <span>Users</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/admin/analytics" className={pathname === "/admin/analytics" ? "text-primary font-medium" : ""}>
+                    <SidebarMenuButton>
+                      <BarChart3 className="h-4 w-4" />
+                      <span>Analytics</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -145,6 +210,14 @@ export default function DashboardSidebar() {
           {/* Footer is the same for both admin and regular users */}
           <SidebarFooter>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <Link href="/admin/settings" className={pathname === "/admin/settings" ? "text-primary font-medium" : ""}>
+                  <SidebarMenuButton>
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <Link href="/" className="text-muted-foreground hover:text-foreground">
                   <SidebarMenuButton>
