@@ -46,6 +46,14 @@ PayKrypt employs a multi-model ensemble approach to achieve state-of-the-art fra
 - **Ensemble Decision Making**: Final fraud determination uses weighted outputs from multiple models
 - **Continuous Learning**: Models update in real-time as new patterns emerge while preserving privacy
 
+## AI Banking Assistant
+
+PayKrypt includes an intelligent AI chatbot designed to assist users with banking-related queries and provide support during fraudulent situations:
+
+- **Fraud Response Guidance**: Provides step-by-step assistance to users who have experienced fraudulent transactions
+- **Personalized Support**: Tailors advice based on the specific type of fraud encountered and the user's financial situation
+- **Real-time Assistance**: Available 24/7 to help users immediately after detecting suspicious activity
+
 ## Homomorphic Encryption
 
 PayKrypt implements encryption schemes for homomorphic encryption:
