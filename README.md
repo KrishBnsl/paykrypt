@@ -34,13 +34,11 @@ PayKrypt employs a multi-model ensemble approach to achieve state-of-the-art fra
 - **Temporal Pattern Recognition**: Our CNN architecture treats transaction sequences as image-like structures to identify spatial-temporal fraud patterns
 - **Multi-channel Feature Maps**: Separate channels process different feature categories (transaction amounts, timestamps, merchant categories)
 - **Hierarchical Pattern Detection**: Deeper layers capture complex fraud patterns that traditional methods might miss
-- **Adaptive Pooling**: Special pooling layers handle varying transaction sequence lengths
 
 ### Long Short-Term Memory (LSTM) Networks
 - **Sequential Transaction Analysis**: LSTM models capture long-range dependencies in customer transaction history
 - **Anomaly Detection**: Identifies deviations from established customer behavior patterns
 - **Temporal Fraud Signatures**: Recognizes specific temporal patterns associated with fraud
-- **Memory-Augmented Attention**: Custom attention mechanisms focus on suspicious transaction sequences
 
 ### Hybrid Model Architecture
 - **CNN-LSTM Fusion**: Combines CNN's spatial pattern recognition with LSTM's temporal analysis
