@@ -1,10 +1,10 @@
 # PayKrypt
 
-PayKrypt is an advanced fraud detection and secure banking system designed for the financial future of Viksit Bharat 2047, implementing cutting-edge quantum-resistant cryptography and privacy-preserving machine learning techniques.
+PayKrypt is an advanced fraud detection and secure banking system designed for the financial future of Viksit Bharat 2047, implementing cutting-edge cryptography and privacy-preserving machine learning techniques.
 
 ## Project Overview
 
-This project creates a next-generation financial security infrastructure that anticipates the challenges of the quantum computing era. PayKrypt combines sophisticated fraud detection capabilities with post-quantum cryptographic methods to ensure long-term security and privacy in financial transactions.
+This project creates a next-generation financial security infrastructure. PayKrypt combines sophisticated fraud detection capabilities with cryptographic methods to ensure long-term security and privacy in financial transactions.
 
 ## Data Preprocessing
 
@@ -48,28 +48,22 @@ PayKrypt employs a multi-model ensemble approach to achieve state-of-the-art fra
 - **Ensemble Decision Making**: Final fraud determination uses weighted outputs from multiple models
 - **Continuous Learning**: Models update in real-time as new patterns emerge while preserving privacy
 
-Our approach achieves exceptional performance with:
-- 96.5% fraud detection accuracy
-- 0.92 AUC-ROC score
-- 3x faster detection than traditional methods
-- 89% reduction in false positives compared to rule-based systems
+## Homomorphic Encryption
 
-## Post-Quantum Homomorphic Encryption
+PayKrypt implements encryption schemes for homomorphic encryption:
 
-As traditional cryptographic methods become vulnerable to quantum computing attacks, PayKrypt implements post-quantum encryption schemes for homomorphic encryption:
-
-- **Lattice-Based Cryptography**: Our system utilizes lattice-based schemes resistant to quantum algorithms
-- **Quantum-Resistant Homomorphic Encryption**: Enables computations on encrypted data that will remain secure in the quantum era
-- **Future-Proof Architecture**: Designed to withstand advances in quantum computing expected by 2047
+- **Secure Homomorphic Encryption**: Our system utilizes encryption schemes that protect sensitive data
+- **Homomorphic Computation**: Enables computations on encrypted data without decryption
+- **Future-Proof Architecture**: Designed to adapt to evolving cybersecurity challenges
 
 ## Federated Learning System
 
-PayKrypt implements a federated learning architecture with quantum-resistant security:
+PayKrypt implements a federated learning architecture with secure encryption:
 
 - **Decentralized Model Training**: Each financial institution trains models locally on their own data
-- **Secure Parameter Sharing**: Model updates are protected with post-quantum homomorphic encryption
+- **Secure Parameter Sharing**: Model updates are protected with homomorphic encryption
 - **Zero-Knowledge Proofs**: Verification of data integrity without revealing sensitive information
-- **Quantum-Resistant Secure Aggregation**: A central server aggregates encrypted model parameters without compromising security
+- **Secure Aggregation**: A central server aggregates encrypted model parameters without compromising security
 
 This approach creates a nationwide secure financial network aligned with Viksit Bharat 2047's vision of technological sovereignty and advanced digital infrastructure.
 
@@ -95,7 +89,7 @@ pip install -r requirements.txt
 jupyter notebook data_preprocess.ipynb
 ```
 
-2. Run the federated learning system with post-quantum encryption:
+2. Run the federated learning system with encryption:
 ```bash
 jupyter notebook privacy_federated_learning.ipynb
 ```
