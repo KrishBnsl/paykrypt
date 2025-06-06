@@ -20,7 +20,7 @@ The project includes extensive data preprocessing steps for the generated data:
 PayKrypt uses Generative Adversarial Networks (GANs) to create synthetic financial transaction data, taking the IEEE-CIS Fraud Detection dataset as a reference:
 [IEEE-CIS Fraud Detection Competition](https://www.kaggle.com/competitions/ieee-fraud-detection/data)
 
-Key benefits of our GAN-based approach:
+Key benefits of our GAN-based approach:-
 - Creates realistic transaction patterns that preserve statistical properties of real financial data
 - Generates diverse fraud scenarios for comprehensive model training
 - Enables unlimited training data without privacy concerns
